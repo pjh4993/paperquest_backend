@@ -4,9 +4,12 @@ This module contains the mongo db handler class.
 
 """
 
-from beanie import init_beanie
+from typing import Generic
+
+from beanie import PydanticObjectId, init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from app.common.types import DOCUMENT_TYPE
 from app.core.config import settings
 from app.models import DOCUMENT_REGISTRY
 
@@ -65,3 +68,43 @@ class MongoDBSessionManager:
             database=client.paper_quest,
             document_models=document_models,  # type: ignore
         )
+
+
+class MongoDBDocumentHandler(Generic[DOCUMENT_TYPE]):
+    """Mongo db document handler class
+
+    This class is responsible for handling the mongo db.
+
+    """
+
+    model: DOCUMENT_TYPE
+
+    async def get(self, obj_id: PydanticObjectId) -> DOCUMENT_TYPE | None:
+        """Get the document.
+
+        This method is responsible for getting the document by bson object id.
+
+        Args:
+            obj_id (PydanticObjectId): The bson object id.
+
+        Returns:
+            DOCUMENT_TYPE: The document.
+
+        """
+
+        return await self.model.get(document_id=obj_id)
+
+    async def create(self, document: DOCUMENT_TYPE) -> DOCUMENT_TYPE:
+        """Create the document.
+
+        This method is responsible for creating the document.
+
+        Args:
+            document (DOCUMENT_TYPE): The document.
+
+        Returns:
+            DOCUMENT_TYPE: The created document.
+
+        """
+
+        return await document.create()
