@@ -3,6 +3,7 @@
 import unittest
 from unittest.mock import patch
 
+from app.external.database.mongo import MongoDBDocumentHandler
 from app.models.paper_metadata import PaperMetadata
 from app.repositories.paper_metadata import PaperMetadataRepository
 from tests.data.paper_metadata import DummyPaperMetadataFactory
@@ -17,7 +18,7 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
         self.mock_session = MockMongoDBSession()
         self.dummy_data = DummyPaperMetadataFactory()
 
-        with patch.object(PaperMetadataRepository, "__init__", return_value=None):
+        with patch.object(MongoDBDocumentHandler, "__init__", return_value=None):
             self.repo = PaperMetadataRepository()
 
     async def asyncSetUp(self) -> None:

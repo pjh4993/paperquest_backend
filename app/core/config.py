@@ -36,5 +36,15 @@ class Settings(BaseSettings):
     MONGODB_USER_PASSWORD: str | None = None
     MONGODB_DB_NAME: str = "PaperQuest"
 
+    # Data directory settings
+    DATA_DIR: str = "andrew/paperquest/data"
+
+    # Google cloud storage settings
+    GOOGLE_CLOUD_PROJECT_ID: str | None = None
+    GOOGLE_CLOUD_STORAGE_BUCKET_ID: str | None = None
+
+    # Local storage settings
+    LOCAL_STORAGE_PATH: str = "/artifacts"
+
 
 settings = Settings()

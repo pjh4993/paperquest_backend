@@ -16,6 +16,15 @@ class BaseDummyDataFactory:
 
     """
 
+    def __init__(self):
+        """Initialize the base dummy data factory.
+
+        This method is used to initialize the base dummy data factory.
+
+        """
+
+        self.paper_metadata_id = self.generate_random_obj_id()
+
     @property
     def paper_metadata_json(self) -> dict:
         """Get the paper metadata.
@@ -28,12 +37,14 @@ class BaseDummyDataFactory:
         """
 
         return {
+            "_id": self.paper_metadata_id,
             "title": "title",
             "authors": ["author1", "author2"],
             "abstract": "abstract",
             "published_at": "2021-01-01T00:00:00",
             "venue": "venue",
             "keywords": ["keyword1", "keyword2"],
+            "url": "http://example.com/test.pdf",
         }
 
     @staticmethod

@@ -7,7 +7,7 @@ This module contains the paper metadata document model.
 from datetime import datetime
 
 from beanie import Document
-from pydantic import Field
+from pydantic import AnyUrl, Field
 
 from app.models.base import DOCUMENT_REGISTRY
 
@@ -26,3 +26,4 @@ class PaperMetadata(Document):
     published_at: datetime = Field(..., description="The published date of the paper.")
     venue: str = Field(..., description="The venue of the paper.")
     keywords: list[str] = Field(..., description="The keywords of the paper.")
+    url: AnyUrl = Field(..., description="The pdf file url of the paper.")

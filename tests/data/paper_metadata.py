@@ -15,11 +15,6 @@ class DummyPaperMetadataFactory(BaseDummyDataFactory):
 
     """
 
-    def __init__(self):
-        super().__init__()
-
-        self.paper_metadata_id = BaseDummyDataFactory.generate_random_obj_id()
-
     @property
     def paper_metadata_model(self) -> PaperMetadata:
         """Get the paper metadata.
