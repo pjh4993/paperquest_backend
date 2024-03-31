@@ -4,26 +4,22 @@ This module contains the base json formed dummy data.
 
 """
 
-import binascii
-import os
-import time
+from pydantic import Field, HttpUrl
+
+from app.common.pydantic_model import ModelBase
+from tests.misc import generate_random_obj_id
 
 
-class BaseDummyDataFactory:
+class BaseDummyDataFactory(ModelBase):
     """This class is for base dummy data factory.
 
     This class is responsible for raw json data and utility methods.
 
     """
 
-    def __init__(self):
-        """Initialize the base dummy data factory.
-
-        This method is used to initialize the base dummy data factory.
-
-        """
-
-        self.paper_metadata_id = self.generate_random_obj_id()
+    paper_metadata_id: str = Field(default_factory=generate_random_obj_id)
+    paper_url: HttpUrl = Field(default="http://example.com/test.pdf")
+    raw_paper_bytes: bytes = Field(default=b"test")
 
     @property
     def paper_metadata_json(self) -> dict:
@@ -44,20 +40,5 @@ class BaseDummyDataFactory:
             "published_at": "2021-01-01T00:00:00",
             "venue": "venue",
             "keywords": ["keyword1", "keyword2"],
-            "url": "http://example.com/test.pdf",
+            "url": self.paper_url,
         }
-
-    @staticmethod
-    def generate_random_obj_id() -> str:
-        """Generate random object id
-
-        Generate random object id with timestamp and random string
-
-        Returns:
-            str : random object id
-
-        """
-
-        timestamp = int(time.time())
-        rest = binascii.b2a_hex(os.urandom(8)).decode("ascii")
-        return f"{timestamp:x}{rest}"

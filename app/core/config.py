@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     # App settings
     VERSION: str = "0.0.1"
     DESCRIPTION: str = "PaperQuest-Backend"
+    DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
 
     # Uvicorn settings
     UVICORN_HOST: str = "localhost"

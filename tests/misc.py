@@ -1,6 +1,9 @@
 """Mischellaneous utilities for unittest codes"""
 
+import binascii
 import importlib
+import os
+import time
 from unittest.mock import patch
 
 
@@ -22,3 +25,18 @@ def patch_method(method_object: object):
     target_class_obj = getattr(importlib.import_module(module_name), target_class_name)
 
     return patch.object(target_class_obj, method_name)
+
+
+def generate_random_obj_id() -> str:
+    """Generate random object id
+
+    Generate random object id with timestamp and random string
+
+    Returns:
+        str : random object id
+
+    """
+
+    timestamp = int(time.time())
+    rest = binascii.b2a_hex(os.urandom(8)).decode("ascii")
+    return f"{timestamp:x}{rest}"

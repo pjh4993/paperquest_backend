@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from app.external.storage.google_cloud_storage import GoogleCloudStorageHandler
 from app.repositories.paper_document import PaperDocumentRepository
-from tests.data.paper_document import DummyPaperDocumentFactory
+from tests.data.paper import DummyPaperFactory
 from tests.misc import patch_method
 
 
@@ -13,7 +13,7 @@ class TestPaperDocumentRepository(unittest.IsolatedAsyncioTestCase):
     """Test for Paper document repository."""
 
     def setUp(self) -> None:
-        self.dummy_data = DummyPaperDocumentFactory()
+        self.dummy_data = DummyPaperFactory()
         with patch.object(GoogleCloudStorageHandler, "__init__", return_value=None):
             self.paper_document_repo = PaperDocumentRepository()
 
@@ -21,26 +21,29 @@ class TestPaperDocumentRepository(unittest.IsolatedAsyncioTestCase):
     async def test_download_paper_document(self, mock_download_blob):
 
         paper_metadata_id = self.dummy_data.paper_metadata_id
-        destination_file_path = self.dummy_data.local_storage_file_path
-        source_blob_name = self.dummy_data.gcs_file_path
+        raw_paper_bytes = self.dummy_data.raw_paper_bytes
 
-        mock_download_blob.return_value = None
+        mock_download_blob.return_value = raw_paper_bytes
         result = await self.paper_document_repo.download_paper_document(
-            paper_obj_id=paper_metadata_id, destination_file_path=destination_file_path
+            paper_obj_id=paper_metadata_id
         )
 
-        self.assertEqual(result, source_blob_name)
+        self.assertEqual(result, raw_paper_bytes)
 
+    @patch_method(PaperDocumentRepository.request)
     @patch_method(PaperDocumentRepository.upload_blob)
-    async def test_upload_paper_document(self, mock_upload_blob):
+    async def test_upload_paper_document(self, mock_upload_blob, mock_request):
 
+        paper_url = self.dummy_data.paper_url
         paper_metadata_id = self.dummy_data.paper_metadata_id
-        source_file_path = self.dummy_data.local_storage_file_path
-        dest_blob_name = self.dummy_data.gcs_file_path
+        raw_paper_bytes = self.dummy_data.raw_paper_bytes
+        gcs_blob_url = self.dummy_data.gcs_blob_url
+
+        mock_request.content.read.return_value = raw_paper_bytes
 
         mock_upload_blob.return_value = None
         result = await self.paper_document_repo.upload_paper_document(
-            paper_obj_id=paper_metadata_id, source_file_path=source_file_path
+            paper_obj_id=paper_metadata_id, paper_url=paper_url
         )
 
-        self.assertEqual(result, dest_blob_name)
+        self.assertEqual(result, gcs_blob_url)

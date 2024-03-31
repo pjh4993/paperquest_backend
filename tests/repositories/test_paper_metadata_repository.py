@@ -6,7 +6,7 @@ from unittest.mock import patch
 from app.external.database.mongo import MongoDBDocumentHandler
 from app.models.paper_metadata import PaperMetadata
 from app.repositories.paper_metadata import PaperMetadataRepository
-from tests.data.paper_metadata import DummyPaperMetadataFactory
+from tests.data.paper import DummyPaperFactory
 from tests.misc import patch_method
 from tests.session.mongo import MockMongoDBSession
 
@@ -16,7 +16,7 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
 
     def setUp(self) -> None:
         self.mock_session = MockMongoDBSession()
-        self.dummy_data = DummyPaperMetadataFactory()
+        self.dummy_data = DummyPaperFactory()
 
         with patch.object(MongoDBDocumentHandler, "__init__", return_value=None):
             self.repo = PaperMetadataRepository()
@@ -37,12 +37,26 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(result, paper_metadata_model)
 
     @patch_method(PaperMetadataRepository.create)
-    async def test_add(self, mock_create):
+    async def test_register_metadata(self, mock_create):
         """Test add method."""
 
         paper_metadata_model = self.dummy_data.paper_metadata_model
         mock_create.return_value = paper_metadata_model
 
-        result = await self.repo.add(paper_metadata=paper_metadata_model)
+        result = await self.repo.register_metadata(obj=paper_metadata_model)
+
+        self.assertEqual(result, paper_metadata_model)
+
+    @patch_method(PaperMetadataRepository.update_one)
+    async def test_update_gcs_blob_url(self, mock_update_one):
+        """Test update_gcs_blob_url method."""
+
+        paper_metadata_model = self.dummy_data.paper_metadata_model
+        gcs_blob_url = self.dummy_data.gcs_blob_url
+        mock_update_one.return_value = paper_metadata_model
+
+        result = await self.repo.update_gcs_blob_url(
+            obj=paper_metadata_model, upload_status=gcs_blob_url
+        )
 
         self.assertEqual(result, paper_metadata_model)

@@ -4,7 +4,7 @@ This module contains the mongo db handler class.
 
 """
 
-from typing import Generic
+from typing import Generic, Type
 
 from beanie import PydanticObjectId, init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -77,7 +77,17 @@ class MongoDBDocumentHandler(Generic[DOCUMENT_TYPE]):
 
     """
 
-    model: DOCUMENT_TYPE
+    def __init__(self, model: Type[DOCUMENT_TYPE]):
+        """Initialize the mongo db document handler.
+
+        This method is responsible for initializing the mongo db document handler.
+
+        Args:
+            model (DOCUMENT_TYPE): The document model.
+
+        """
+
+        self.model = model
 
     async def get(self, obj_id: PydanticObjectId) -> DOCUMENT_TYPE | None:
         """Get the document.
@@ -108,3 +118,18 @@ class MongoDBDocumentHandler(Generic[DOCUMENT_TYPE]):
         """
 
         return await document.create()
+
+    async def update_one(self, document: DOCUMENT_TYPE) -> DOCUMENT_TYPE:
+        """Update the document.
+
+        This method is responsible for updating the document.
+
+        Args:
+            document (DOCUMENT_TYPE): The document which needs to be updated.
+
+        Returns:
+            DOCUMENT_TYPE: The updated document.
+
+        """
+
+        return await self.model.replace(document)
