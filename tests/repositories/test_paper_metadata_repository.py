@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test cases for the paper metadata repository."""
 
 import unittest
@@ -15,6 +16,8 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
     """Test cases for the paper metadata repository."""
 
     def setUp(self) -> None:
+        """Set up the test case."""
+
         self.mock_session = MockMongoDBSession()
         self.dummy_data = DummyPaperFactory()
 
@@ -22,6 +25,8 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
             self.repo = PaperMetadataRepository()
 
     async def asyncSetUp(self) -> None:
+        """Set up the async test case."""
+
         await self.mock_session.connect_to_mock_mongo(models=[PaperMetadata])
 
     @patch_method(PaperMetadataRepository.get)
@@ -32,7 +37,7 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
         paper_metadata_model = self.dummy_data.paper_metadata_model
         mock_get.return_value = paper_metadata_model
 
-        result = await self.repo.get_by_obj_id(obj_id=obj_id)
+        result = await self.repo.get_metadata_by_id(obj_id=obj_id)
 
         self.assertEqual(result, paper_metadata_model)
 
@@ -40,10 +45,11 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
     async def test_register_metadata(self, mock_create):
         """Test add method."""
 
+        obj = self.dummy_data.register_paper_schema
         paper_metadata_model = self.dummy_data.paper_metadata_model
         mock_create.return_value = paper_metadata_model
 
-        result = await self.repo.register_metadata(obj=paper_metadata_model)
+        result = await self.repo.register_metadata(obj=obj)
 
         self.assertEqual(result, paper_metadata_model)
 
@@ -60,3 +66,15 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
         )
 
         self.assertEqual(result, paper_metadata_model)
+
+    @patch_method(PaperMetadataRepository.find_many)
+    async def test_get_metadata_list(self, mock_find):
+        """Test get_metadata_list method."""
+
+        obj = self.dummy_data.get_paper_metadata_list_param
+        paginated_paper_metadata = self.dummy_data.paginated_paper_metadata
+        mock_find.return_value = paginated_paper_metadata
+
+        result = await self.repo.get_metadata_list_by_page(obj=obj)
+
+        self.assertEqual(result, paginated_paper_metadata)

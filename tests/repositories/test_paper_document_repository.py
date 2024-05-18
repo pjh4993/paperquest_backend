@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test for Paper document repository."""
 
 import unittest
@@ -13,12 +14,15 @@ class TestPaperDocumentRepository(unittest.IsolatedAsyncioTestCase):
     """Test for Paper document repository."""
 
     def setUp(self) -> None:
+        """Set up the test case."""
+
         self.dummy_data = DummyPaperFactory()
         with patch.object(GoogleCloudStorageHandler, "__init__", return_value=None):
             self.paper_document_repo = PaperDocumentRepository()
 
     @patch_method(PaperDocumentRepository.download_blob)
     async def test_download_paper_document(self, mock_download_blob):
+        """Test download_paper_document method."""
 
         paper_metadata_id = self.dummy_data.paper_metadata_id
         raw_paper_bytes = self.dummy_data.raw_paper_bytes
@@ -33,6 +37,7 @@ class TestPaperDocumentRepository(unittest.IsolatedAsyncioTestCase):
     @patch_method(PaperDocumentRepository.request)
     @patch_method(PaperDocumentRepository.upload_blob)
     async def test_upload_paper_document(self, mock_upload_blob, mock_request):
+        """Test upload_paper_document method."""
 
         paper_url = self.dummy_data.paper_url
         paper_metadata_id = self.dummy_data.paper_metadata_id

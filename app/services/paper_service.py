@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Paper service module.
 
 This module contains the service for the paper model.
@@ -6,10 +7,15 @@ This module contains the service for the paper model.
 
 from app.common.enums import BackgroundTaskStatus
 from app.common.exceptions import NotFoundError
+from app.common.misc import count_total_pages
 from app.models.paper_metadata import PaperMetadata
 from app.repositories.paper_document import PaperDocumentRepository
 from app.repositories.paper_metadata import PaperMetadataRepository
-from app.schemas.paper import RegisterPaperSchema
+from app.schemas.paper_metadata import (
+    GetPaperListDetailSchema,
+    GetPaperMetadataListParam,
+    RegisterPaperSchema,
+)
 
 
 class PaperService:
@@ -63,7 +69,7 @@ class PaperService:
 
         """
 
-        result = await self.paper_metadata_repo.register_metadata(PaperMetadata.model_validate(obj))
+        result = await self.paper_metadata_repo.register_metadata(obj)
 
         if result is None or result.id is None:
             raise NotFoundError(f"Failed to register paper metadata with {obj}")
@@ -83,4 +89,36 @@ class PaperService:
 
         """
 
-        return await self.paper_metadata_repo.get_by_obj_id(paper_obj_id)
+        return await self.paper_metadata_repo.get_metadata_by_id(paper_obj_id)
+
+    async def get_paper_metadata_list(
+        self, obj: GetPaperMetadataListParam
+    ) -> GetPaperListDetailSchema:
+        """Get paper metadata list.
+
+        This method gets the paper metadata list.
+
+        Args:
+            obj: The get paper metadata list parameter.
+
+        Returns:
+            list[PaperMetadata]: The paper metadata list.
+
+        """
+
+        paper_metadata_list = await self.paper_metadata_repo.get_metadata_list_by_page(obj=obj)
+
+        if not paper_metadata_list:
+            raise NotFoundError("No paper metadata found.")
+
+        return GetPaperListDetailSchema.model_validate(
+            {
+                "page_token": paper_metadata_list.items[-1].id
+                if paper_metadata_list.items
+                else None,
+                "page_size": obj.page_size,
+                "total_items": paper_metadata_list.total,
+                "total_pages": count_total_pages(paper_metadata_list.total, obj.page_size),
+                "items": paper_metadata_list.items,
+            }
+        )

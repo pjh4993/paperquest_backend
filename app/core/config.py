@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Base settings for the application."""
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -25,6 +26,8 @@ class Settings(BaseSettings):
     VERSION: str = "0.0.1"
     DESCRIPTION: str = "PaperQuest-Backend"
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
+    API_V1_PREFIX: str = "/api/v1"
+    CONCURRENCY_LIMIT: int = 10
 
     # Uvicorn settings
     UVICORN_HOST: str = "localhost"

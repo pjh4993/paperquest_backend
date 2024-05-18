@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Mischellaneous utility functions"""
 
 from app.common.types import GCSBlobUrl
@@ -18,3 +19,20 @@ def get_gcs_url(bucket_id: str, blob_name: str) -> GCSBlobUrl:
     """
 
     return f"gs://{bucket_id}/{blob_name}"
+
+
+def count_total_pages(total: int, page_size: int) -> int:
+    """Count total pages.
+
+    This function is used to count total pages.
+
+    Args:
+        total (int): The total.
+        page_size (int): The page size.
+
+    Returns:
+        int: The total pages.
+
+    """
+
+    return (total + page_size - 1) // page_size

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """General async requests module.
 
 This module is used to make async requests.

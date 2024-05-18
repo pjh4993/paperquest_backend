@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Paper schema module.
 
 This module contains the paper schema.
@@ -9,6 +10,7 @@ from datetime import datetime
 from pydantic import AnyHttpUrl, Field
 
 from app.common.pydantic_model import ModelBase
+from app.schemas.base import PaginatedResultSchemaBase, PaginationParamSchemaBase
 
 
 class PaperSchemaBase(ModelBase):
@@ -35,9 +37,25 @@ class RegisterPaperSchema(PaperSchemaBase):
     """
 
 
+class GetPaperMetadataListParam(PaginationParamSchemaBase):
+    """Get paper metadata list parameter schema.
+
+    This class is responsible for the get paper metadata list parameter schema.
+
+    """
+
+
 class GetPaperDetailSchema(PaperSchemaBase):
     """Get paper detail schema.
 
     This class is responsible for the get paper detail schema.
+
+    """
+
+
+class GetPaperListDetailSchema(PaginatedResultSchemaBase[GetPaperDetailSchema]):
+    """Get paper list detail schema.
+
+    This class is responsible for the get paper list detail schema.
 
     """

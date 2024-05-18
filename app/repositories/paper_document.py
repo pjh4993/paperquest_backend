@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Paper document repository.
 
 This module is for paper pdf repository which manage paper pdf
@@ -8,11 +9,11 @@ import os
 
 from pydantic import AnyHttpUrl
 
+from app.common.async_requests import AsyncRequestHandler
+from app.common.misc import get_gcs_url
 from app.common.types import GCSBlobUrl
 from app.core.config import settings
 from app.external.storage.google_cloud_storage import GoogleCloudStorageHandler
-from app.utils.async_requests import AsyncRequestHandler
-from app.utils.misc import get_gcs_url
 
 
 class PaperDocumentRepository(GoogleCloudStorageHandler, AsyncRequestHandler):

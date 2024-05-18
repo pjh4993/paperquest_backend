@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Paper metadata document model.
 
 This module contains the paper metadata document model.
@@ -15,6 +16,7 @@ from app.common.types import GCSBlobUrl
 from app.models.base import DOCUMENT_REGISTRY
 
 
+@DOCUMENT_REGISTRY.register
 class PaperMetadata(Document, ModelBase):
     """Paper metadata document model.
 
@@ -36,5 +38,8 @@ class PaperMetadata(Document, ModelBase):
         """,
     )
 
+    class Settings:
+        """Settings for the document model."""
 
-DOCUMENT_REGISTRY.register(PaperMetadata)
+        collection = "paper_metadata"
+        indexes = ["title", "authors", "published_at", "venue", "keywords"]
