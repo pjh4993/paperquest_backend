@@ -53,7 +53,7 @@ class TestPaperMetadataRepository(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(result, paper_metadata_model)
 
-    @patch_method(PaperMetadataRepository.update_one)
+    @patch_method(PaperMetadataRepository.replace)
     async def test_update_gcs_blob_url(self, mock_update_one):
         """Test update_gcs_blob_url method."""
 

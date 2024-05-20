@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.models.paper_metadata import PaperMetadata
 from app.repositories.paper_document import PaperDocumentRepository
 from app.schemas.paper_metadata import (
+    GetPaperDetailSchema,
     GetPaperListDetailSchema,
     GetPaperMetadataListParam,
     RegisterPaperSchema,
@@ -122,3 +123,16 @@ class DummyPaperFactory(BaseDummyDataFactory):
                 "items": [self.paper_metadata_model],
             }
         )
+
+    @property
+    def get_paper_detail_schema(self) -> GetPaperDetailSchema:
+        """Get the get paper detail schema.
+
+        This method is responsible for getting the get paper detail schema.
+
+        Returns:
+            GetPaperDetailSchema: The get paper detail schema.
+
+        """
+
+        return GetPaperDetailSchema.model_validate(self.paper_metadata_model)

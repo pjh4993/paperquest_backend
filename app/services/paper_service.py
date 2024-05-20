@@ -12,6 +12,7 @@ from app.models.paper_metadata import PaperMetadata
 from app.repositories.paper_document import PaperDocumentRepository
 from app.repositories.paper_metadata import PaperMetadataRepository
 from app.schemas.paper_metadata import (
+    GetPaperDetailSchema,
     GetPaperListDetailSchema,
     GetPaperMetadataListParam,
     RegisterPaperSchema,
@@ -31,7 +32,9 @@ class PaperService:
         self.paper_metadata_repo = PaperMetadataRepository()
         self.paper_document_repo = PaperDocumentRepository()
 
-    async def upload_paper_document(self, obj: PaperMetadata, paper_obj_id: str) -> PaperMetadata:
+    async def upload_paper_document(
+        self, obj: PaperMetadata, paper_obj_id: str
+    ) -> GetPaperDetailSchema:
         """Upload paper document.
 
         This method uploads the paper document.
@@ -41,7 +44,7 @@ class PaperService:
             paper_obj_id (str): The paper object id.
 
         Returns:
-            PaperMetadata: The updated paper metadata.
+            GetPaperDetailSchema: The updated paper metadata.
 
         """
 
@@ -54,9 +57,9 @@ class PaperService:
 
         updated = await self.paper_metadata_repo.update_gcs_blob_url(obj, upload_result)
 
-        return updated
+        return GetPaperDetailSchema.model_validate(updated)
 
-    async def register_paper(self, obj: RegisterPaperSchema) -> PaperMetadata:
+    async def register_paper(self, obj: RegisterPaperSchema) -> GetPaperDetailSchema:
         """Register a paper.
 
         This method registers a paper.
@@ -65,7 +68,7 @@ class PaperService:
             obj (RegisterPaperSchema): The register paper schema.
 
         Returns:
-            PaperMetadata: The registered paper metadata.
+            GetPaperDetailSchema: The registered paper.
 
         """
 
@@ -74,9 +77,9 @@ class PaperService:
         if result is None or result.id is None:
             raise NotFoundError(f"Failed to register paper metadata with {obj}")
 
-        return result
+        return GetPaperDetailSchema.model_validate(result)
 
-    async def get_paper_metadata(self, paper_obj_id: str) -> PaperMetadata | None:
+    async def get_paper_metadata(self, paper_obj_id: str) -> GetPaperDetailSchema:
         """Get paper metadata.
 
         This method gets the paper metadata.
@@ -85,11 +88,16 @@ class PaperService:
             paper_obj_id (str): The paper object id.
 
         Returns:
-            PaperMetadata: The paper metadata.
+            GetPaperDetailSchema: The paper metadata.
 
         """
 
-        return await self.paper_metadata_repo.get_metadata_by_id(paper_obj_id)
+        result = await self.paper_metadata_repo.get_metadata_by_id(paper_obj_id)
+
+        if result is None:
+            raise NotFoundError(f"Paper metadata not found with {paper_obj_id}")
+
+        return GetPaperDetailSchema.model_validate(result)
 
     async def get_paper_metadata_list(
         self, obj: GetPaperMetadataListParam

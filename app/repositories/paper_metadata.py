@@ -80,7 +80,7 @@ class PaperMetadataRepository(MongoDBDocumentHandler[PaperMetadata]):
 
         obj.gcs_blob_url = upload_status
 
-        return await self.update_one(document=obj)
+        return await self.replace(document=obj)
 
     async def get_metadata_list_by_page(
         self, obj: GetPaperMetadataListParam

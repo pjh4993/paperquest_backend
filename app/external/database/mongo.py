@@ -134,8 +134,8 @@ class MongoDBDocumentHandler(Generic[DOCUMENT_TYPE]):
 
         return await document.create()
 
-    async def update_one(self, document: DOCUMENT_TYPE) -> DOCUMENT_TYPE:
-        """Update the document.
+    async def replace(self, document: DOCUMENT_TYPE) -> DOCUMENT_TYPE:
+        """Replace the origianl document with current one.
 
         This method is responsible for updating the document.
 

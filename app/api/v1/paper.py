@@ -8,7 +8,12 @@ This paper API router module contains the API router for the paper model.
 from fastapi import APIRouter, Depends
 
 from app.common.response import CustomResponseCode, ResponseBase, ResponseModel
-from app.schemas.paper_metadata import GetPaperListDetailSchema, GetPaperMetadataListParam
+from app.schemas.paper_metadata import (
+    GetPaperDetailSchema,
+    GetPaperListDetailSchema,
+    GetPaperMetadataListParam,
+    RegisterPaperSchema,
+)
 from app.services.paper_service import PaperService
 
 router = APIRouter()
@@ -28,7 +33,7 @@ async def get_paper_metadata_list(
         paper_service (PaperService): The paper service.
 
     Returns:
-        dict: The paper metadata list.
+        ResponseModel[GetPaperListDetailSchema]: The paper metadata list.
 
     """
 
@@ -38,3 +43,29 @@ async def get_paper_metadata_list(
         return await ResponseBase.failed(res=CustomResponseCode.HTTP_404)
 
     return await ResponseBase.success(data=paper_metadata_list)
+
+
+@router.post("")
+async def register_paper(
+    obj: RegisterPaperSchema,
+    paper_service: PaperService = Depends(),
+) -> ResponseModel[GetPaperDetailSchema]:
+    """Register paper.
+
+    This function is responsible for registering a paper.
+
+    Args:
+        obj (RegisterPaperSchema): The register paper schema.
+        paper_service (PaperService): The paper service.
+
+    Returns:
+        ResponseModel[GetPaperDetailSchema]: The registered paper.
+
+    """
+
+    result = await paper_service.register_paper(obj=obj)
+
+    if result is None:
+        return await ResponseBase.failed(res=CustomResponseCode.HTTP_404)
+
+    return await ResponseBase.success(data=result)

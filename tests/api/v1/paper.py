@@ -57,3 +57,17 @@ class TestPaperRoute(unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual(response_data["code"], 200)
         self.assertEqual(response_data["data"], expected_result)
+
+    @patch_method(PaperService.register_paper)
+    async def test_async_register_paper(self, mock_register_paper) -> None:
+        """Test register paper"""
+
+        mock_register_paper.return_value = self.dummy_data.get_paper_detail_schema
+        data = self.dummy_data.register_paper_schema.model_dump(mode="json")
+        expected_result = self.dummy_data.get_paper_detail_schema
+
+        response = await self.async_client.post(f"{self.base_path}", json=data)
+        response_data = response.json()
+
+        self.assertEqual(response_data["code"], 200)
+        self.assertEqual(response_data["data"], expected_result)
